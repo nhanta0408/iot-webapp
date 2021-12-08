@@ -1,6 +1,10 @@
 import React from "react";
 import thermo_icon from "./../assets/thermo.png";
 import { ColorConstant } from "./../value/color_constant";
+import { Constant } from "../value/constant";
+import Swal from "sweetalert2";
+import AlertPopup from "./AlertPopup";
+
 export default function SensorWidget(props) {
   return (
     <div
@@ -40,13 +44,25 @@ export default function SensorWidget(props) {
         }}
       >
         <img src={props.img} width="75" height="75" />
-        {props.title == "TEMPERATURE" ? (
-          <p style={{ margin: "0px 0px 5px 20px", fontSize: 45 }}>
+        {props.title == Constant.titleTemperature ? (
+          <p
+            style={{
+              margin: "0px 0px 5px 20px",
+              fontSize: 45,
+              color: props.isAlert ? "red" : "black",
+            }}
+          >
             {props.value} &deg;C
           </p>
         ) : (
-          <p style={{ margin: "0px 0px 5px 20px", fontSize: 45 }}>
-            {props.value}
+          <p
+            style={{
+              margin: "0px 0px 5px 20px",
+              fontSize: 45,
+              color: props.isAlert ? "red" : "black",
+            }}
+          >
+            {props.value + "%"}
           </p>
         )}
       </div>

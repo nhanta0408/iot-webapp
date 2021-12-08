@@ -13,10 +13,13 @@
     "date-fns": "^2.27.0",
     "hammerjs": "^2.0.8",
     "luxon": "^2.1.1",
+    "node-sass": "^6.0.1",
     "react": "^17.0.2",
     "react-chartjs-2": "^4.0.0",
     "react-dom": "^17.0.2",
     "react-scripts": "4.0.3",
+    "react-switch": "^6.0.0",
+    "sweetalert2-react": "^0.8.3",
     "web-vitals": "^1.1.2"
   },
   "scripts": {

@@ -65,8 +65,6 @@ const LineChart = (props) => {
   const dataObjs = MockTest.feeds;
   const label = dataObjs.map((dataObj) => new Date(dataObj.created_at));
   const data = dataObjs.map((dataObj) => dataObj.field1);
-  console.log(label);
-  console.log(data);
   var timeFormat = "DD/MM/YYYY";
   return (
     <div
@@ -115,9 +113,10 @@ const LineChart = (props) => {
           scales: {
             x: {
               grid: {
+                color: "#00000050",
                 tickLength: 5,
                 tickWidth: 1,
-                tickColor: ColorConstant.mblack,
+                tickColor: "black",
               },
 
               type: "time",
@@ -132,10 +131,12 @@ const LineChart = (props) => {
                 },
               },
               title: {
+                color: "black",
                 display: true,
                 text: "Time",
               },
               ticks: {
+                color: "black",
                 display: true,
                 maxRotation: 0,
                 sampleSize: 100,
@@ -146,14 +147,17 @@ const LineChart = (props) => {
               },
             },
             y: {
+              grid: { color: "#00000050", tickColor: "black" },
               bounds: "ticks",
               ticks: {
+                color: "black",
                 includeBounds: true,
                 z: 10,
               },
               title: {
+                color: "black",
                 display: true,
-                text: "value",
+                text: "Value",
               },
             },
           },
@@ -163,7 +167,13 @@ const LineChart = (props) => {
             axis: "xy",
           },
           plugins: {
+            legend: {
+              labels: {
+                color: "black",
+              },
+            },
             title: {
+              color: "black",
               display: true,
               text: props.title,
               font: {
