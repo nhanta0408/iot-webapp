@@ -15,152 +15,6 @@ import { set } from "date-fns";
 import { Component } from "react";
 import Switch from "react-switch";
 
-// const App = () => {
-//   const [time, setTime] = useState(
-//     DateTime.fromISO("2021-12-01T06:58:33.988648+00:00")
-//   );
-//   const [temperature, setTemperature] = useState(15);
-//   const [moist, setMoist] = useState(70);
-//   const [temperature2, setTemperature2] = useState(15);
-//   const [moist2, setMoist2] = useState(70);
-//   const [isAlertTemperature, setIsAlertTemperature] = useState(false);
-//   const [isAlertMoist, setIsAlertMoist] = useState(false);
-//   const [isEnabledAlert, setIsEnableAlert] = useState(true);
-//   const intervalRef = useRef(null);
-//   var temp = 10;
-//   function checkAlert() {
-//     console.log("alert tem", isAlertTemperature);
-//     console.log("alert moist", isAlertMoist);
-//     console.log("Temperature: ", temperature);
-//     console.log("Moist: ", moist);
-//     console.log("Temperature 2: ", temperature2);
-//     console.log("Moist 2: ", moist2);
-//     console.log("--------------");
-
-//     // if (isAlertTemperature && !isAlertMoist) {
-//     //   AlertPopup(
-//     //     Constant.titleTemperature,
-//     //     "Alert \n Temperature is too high or too low!"
-//     //   );
-//     // } else if (isAlertMoist && !isAlertTemperature) {
-//     //   AlertPopup(
-//     //     Constant.titleTemperature,
-//     //     "Alert \n Moist is too high or too low!"
-//     //   );
-//     // } else if (isAlertMoist && isAlertTemperature) {
-//     //   AlertPopup(
-//     //     Constant.titleBothTemperatureMoist,
-//     //     "Alert \n Temperature and Moist is too high or too low!"
-//     //   );
-//     // }
-//   }
-//   const getTimeAPI = async () => {
-//     fetch("http://worldtimeapi.org/api/timezone/Asia/Ho_Chi_Minh")
-//       .then(function (response) {
-//         if (response.status === 200) {
-//           response.json().then(function (data) {
-//             setTime(DateTime.fromISO(data.utc_datetime));
-//             //console.log("Time API ", time.toFormat("ss"));
-//           });
-//         }
-//       })
-//       .catch((err) => console.log(err));
-//   };
-
-//   const setTemperatureFunc = async () => {
-//     await setTemperature(DateTime.now().second);
-//   };
-
-//   useEffect(() => {
-//     intervalRef.current = setInterval(async () => {
-//       await setTemperatureFunc();
-//       console.log("Temperature", temperature);
-//     }, 4000);
-//     return () => {
-//       clearInterval(intervalRef.current);
-//     };
-//   }, [temperature]);
-
-//   return (
-//     <div className="app">
-//       <div>
-//         <div style={{ display: "flex", marginTop: 20 }}>
-//           <Clock time={time} />
-//           <div style={{ width: 20 }}></div>
-//           <SensorWidget
-//             value={temperature}
-//             color={ColorConstant.mred}
-//             title={Constant.titleTemperature}
-//             isAlert={isAlertTemperature}
-//             img={thermo_icon}
-//             backgroundColor="white"
-//           />
-//           <div style={{ width: 20 }}></div>
-//           <SensorWidget
-//             value={moist}
-//             color={ColorConstant.mblue}
-//             title={Constant.titleMoist}
-//             isAlert={isAlertMoist}
-//             img={moist_icon}
-//             backgroundColor="white"
-//           />
-//           <div style={{ width: 20 }}></div>
-//           <SensorWidget
-//             value={75}
-//             color={ColorConstant.mpurple}
-//             title="LOREM 1"
-//             img={moist_icon}
-//             backgroundColor="white"
-//           />
-//           <div style={{ width: 20 }}></div>
-//           <SensorWidget
-//             value={75}
-//             color={ColorConstant.mlightgreen}
-//             title="LOREM 2"
-//             img={moist_icon}
-//             backgroundColor="white"
-//           />
-//         </div>
-//         <div style={{ flexDirection: "row", display: "flex", marginTop: 20 }}>
-//           <LineChart
-//             title="Temperature Chart"
-//             label="Temperature"
-//             mainColor={ColorConstant.mred}
-//           />
-//           <div style={{ width: 20 }}></div>
-//           <LineChart
-//             title="Humidity Chart"
-//             label="Humidity"
-//             mainColor={ColorConstant.mblue}
-//           />
-//         </div>
-//         <div style={{ flexDirection: "row", display: "flex", marginTop: 20 }}>
-//           <LineChart
-//             title="Lorem 1 Chart"
-//             label="Lorem 1"
-//             mainColor={ColorConstant.mpurple}
-//           />
-//           <div style={{ width: 20 }}></div>
-//           <LineChart
-//             title="Lorem 2 Chart"
-//             label="Lorem 2"
-//             mainColor={ColorConstant.mlightgreen}
-//           />
-//         </div>
-//       </div>
-//       <div
-//         style={{
-//           height: 50,
-//           alignItems: "end",
-//           justifyContent: "end",
-//           backgroundColor: "red",
-//         }}
-//       ></div>
-//     </div>
-//   );
-// };
-// export default App;
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -173,21 +27,7 @@ class App extends Component {
       enabledAlertPopUp: false,
     };
   }
-  getTimeAPI = async () => {
-    fetch("http://worldtimeapi.org/api/timezone/Asia/Ho_Chi_Minh")
-      .then((response) => {
-        if (response.status === 200) {
-          response.json().then((data) => {
-            this.setState({
-              ...this.state,
-              time: DateTime.fromISO(data.utc_datetime),
-            });
-            //console.log("Time API ", time.toFormat("ss"));
-          });
-        }
-      })
-      .catch((err) => console.log(err));
-  };
+
   loadData = async () => {
     try {
       await this.setState({
@@ -238,9 +78,6 @@ class App extends Component {
     setInterval(() => {
       this.loadData();
     }, Constant.timeSamplingData);
-    setInterval(() => {
-      this.getTimeAPI();
-    }, 10000);
   }
   render() {
     return (

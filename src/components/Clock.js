@@ -3,6 +3,31 @@ import { useEffect, useState } from "react";
 import { DateTime } from "luxon";
 import { parseWithOptions } from "date-fns/fp";
 export default function Clock(props) {
+  const [time, setTime] = useState(
+    DateTime.fromISO("2021-12-01T06:58:33.988648+00:00")
+  );
+  useEffect(() => {
+    const id = setInterval(async () => {
+      await getTimeAPI();
+    }, 1000);
+    return () => {
+      clearInterval(id);
+    };
+  }, [time]);
+  const getTimeAPI = async () => {
+    fetch("http://worldtimeapi.org/api/timezone/Asia/Ho_Chi_Minh")
+      .then((response) => {
+        if (response.status === 200) {
+          response.json().then(async (data) => {
+            await setTime(DateTime.fromISO(data.utc_datetime));
+          });
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+  useEffect(() => {
+    console.log("Time second", time.second);
+  });
   return (
     <div
       style={{
@@ -46,10 +71,10 @@ export default function Clock(props) {
             fontSize: 36,
           }}
         >
-          {props.time.toFormat("HH:mm:ss")}
+          {time.toFormat("HH:mm:ss")}
         </p>
         <p style={{ margin: "0px 0px 0px 0px", fontSize: 20 }}>
-          {props.time.toFormat("EEEE     dd/MM/yyyy")}
+          {time.toFormat("EEEE     dd/MM/yyyy")}
         </p>
       </div>
     </div>
