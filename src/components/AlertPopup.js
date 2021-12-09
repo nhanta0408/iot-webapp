@@ -20,7 +20,6 @@ function AlertPopup(sensor, title) {
     default:
       break;
   }
-
   Swal.fire({
     title: title,
     imageUrl: imgSrc,

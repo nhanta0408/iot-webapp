@@ -25,9 +25,7 @@ export default function Clock(props) {
       })
       .catch((err) => console.log(err));
   };
-  useEffect(() => {
-    console.log("Time second", time.second);
-  });
+  useEffect(() => {});
   return (
     <div
       style={{
