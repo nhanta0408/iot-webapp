@@ -27,7 +27,7 @@ function AlertPopup(sensor, title) {
     imageHeight: 100,
     imageAlt: "Custom image",
     confirmButtonColor: ColorConstant.mred,
-    timer: Constant.timeSamplingData - 1000,
+    timer: Constant.timeSamplingData - 2000,
   });
 }
 export default AlertPopup;

@@ -95,12 +95,22 @@ const App = () => {
         const dataObjs2 = moistData.feeds;
         var dataMoistChart = dataObjs2.map((dataObj2) => dataObj2.field2);
 
+        //Simulate data
+        dataTemperatureChart[50] =
+          parseInt(dataTemperatureChart[50]) + DateTime.now().second + 30;
+        dataTemperatureChart[99] =
+          parseInt(dataTemperatureChart[99]) + DateTime.now().second;
+
+        dataMoistChart[50] =
+          parseInt(dataMoistChart[50]) - DateTime.now().second - 50;
+        dataMoistChart[99] =
+          parseInt(dataMoistChart[99]) - DateTime.now().second;
+
         tempTemperature = parseInt(dataTemperatureChart.slice(-1)[0]);
         tempMoist =
           dataMoistChart.slice(-1)[0] == null
             ? 70
             : parseInt(dataMoistChart.slice(-1)[0]);
-        console.log("Temp tempMoist", tempMoist);
         var tempIsAlertTemperature =
           tempTemperature > Constant.temperatureHighLimit ||
           tempTemperature < Constant.temperatureLowLimit;
@@ -132,13 +142,13 @@ const App = () => {
     return () => {
       clearInterval(intervalRef.current);
     };
-  }, [{ ...state }]);
+  }, []);
 
   //set Alert
   useEffect(async () => {}, [mockDateTimeSecond]);
 
   useEffect(() => {
-    //checkAlert();
+    checkAlert();
   }, [state]);
   return (
     <div className="app">
