@@ -70,7 +70,7 @@ const LineChart = (props) => {
     <div
       style={{
         height: 420,
-        width: 600,
+        width: 620,
         display: "flex",
         backgroundColor: "white",
         boxShadow: "2px 5px 10px #C7C8C9FF",
@@ -87,12 +87,12 @@ const LineChart = (props) => {
           datasets: [
             {
               label: props.label,
-              data: data,
+              data: props.dataChart,
             },
           ],
-          labels: label,
+          labels: props.labelChart,
         }}
-        height={400}
+        height={380}
         width={580}
         options={{
           maintainAspectRatio: true,
@@ -182,7 +182,7 @@ const LineChart = (props) => {
             },
             zoom: {
               limits: {
-                x: { min: label[0], max: label[99] },
+                x: { min: props.labelChart[0], max: props.labelChart[99] },
               },
               zoom: {
                 wheel: {

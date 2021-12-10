@@ -6,5 +6,5 @@ export const Constant = {
   temperatureLowLimit: 1,
   moistHighLimit: 90,
   moistLowLimit: 60,
-  timeSamplingData: 30000,
+  timeSamplingData: 5000,
 };

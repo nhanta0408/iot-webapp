@@ -10,7 +10,7 @@ export default function SensorWidget(props) {
     <div
       style={{
         height: 160,
-        width: 230,
+        width: 240,
         display: "flex",
         backgroundColor: props.backgroundColor,
         boxShadow: "2px 5px 10px #C7C8C9FF",
@@ -23,7 +23,7 @@ export default function SensorWidget(props) {
       <div
         style={{
           height: 50,
-          width: 230,
+          width: 240,
           backgroundColor: props.color,
           borderRadius: "10px 10px 0px 0px",
           alignItems: "center",
@@ -47,12 +47,12 @@ export default function SensorWidget(props) {
         {props.title == Constant.titleTemperature ? (
           <p
             style={{
-              margin: "0px 0px 5px 20px",
+              margin: "0px 0px 5px 10px",
               fontSize: 45,
               color: props.isAlert ? "red" : "black",
             }}
           >
-            {props.value} &deg;C
+            {props.value}&deg;C
           </p>
         ) : (
           <p

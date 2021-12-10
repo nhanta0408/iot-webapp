@@ -29,8 +29,8 @@ export default function Clock(props) {
   return (
     <div
       style={{
-        height: 160,
-        width: 260,
+        height: 120,
+        width: 500,
         display: "flex",
         backgroundColor: "white",
         boxShadow: "2px 5px 10px #C7C8C9FF",
@@ -43,7 +43,7 @@ export default function Clock(props) {
       <div
         style={{
           height: 50,
-          width: 260,
+          width: 500,
           backgroundColor: "#3A3A3A",
           borderRadius: "10px 10px 0px 0px",
           alignItems: "center",
@@ -55,25 +55,36 @@ export default function Clock(props) {
       </div>
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          width: 500,
+          height: 70,
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           alignItems: "center",
-          justifyContent: "start",
+          justifyContent: "center",
         }}
       >
         <p
           style={{
-            margin: "10px 0px 0px 0px",
-            fontSize: 36,
+            fontSize: 40,
           }}
         >
           {time.toFormat("HH:mm:ss")}
         </p>
-        <p style={{ margin: "0px 0px 0px 0px", fontSize: 20 }}>
-          {time.toFormat("EEEE     dd/MM/yyyy")}
-        </p>
+        <div style={{ width: 100 }}></div>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <p style={{ margin: "0px 0px 0px 0px", fontSize: 23 }}>
+            {time.toFormat("EEEE")}
+          </p>
+          <p style={{ margin: "0px 0px 0px 0px", fontSize: 23 }}>
+            {time.toFormat("dd/MM/yyyy")}
+          </p>
+        </div>
       </div>
     </div>
   );
