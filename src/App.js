@@ -4,20 +4,22 @@ import SensorWidget from "./components/SensorWidget";
 import { ColorConstant } from "./value/color_constant";
 import thermo_icon from "./assets/thermo.png";
 import moist_icon from "./assets/moist.png";
+import pH_icon from "./assets/pH.png";
+import salitiny_icon from "./assets/salitiny.png";
 import bg from "./assets/bg.png";
 
 import LineChart from "./components/LineChart";
 
-import Swal from "sweetalert2";
 import AlertPopup from "./components/AlertPopup";
 import { Constant } from "./value/constant";
 import { DateTime } from "luxon";
 import React, { useEffect, useRef, useState } from "react";
-import { set } from "date-fns";
-import { Component } from "react";
 import Switch from "react-switch";
 import Title from "./components/Title";
 import { MockTest } from "./components/MockTestJSON";
+import { MockTestPH } from "./components/MockTestJsonPH";
+import { MockTestSalinity } from "./components/MockTestJsonSalinity";
+
 import axios, { Axios } from "axios";
 const App = () => {
   const [time, setTime] = useState(
@@ -30,11 +32,15 @@ const App = () => {
   const [state, setState] = useState({
     temperature: 15,
     moist: 70,
+    pH: 7.5,
+    salinity: 25,
     isAlertTemperature: false,
     isAlertMoist: false,
     labelChart: [],
     dataChartTemperature: [],
     dataChartMoist: [],
+    dataChartPH: [],
+    dataChartSalinity: [],
   });
   const intervalRef = useRef(null);
   var mockDateTimeSecond = 10;
@@ -118,19 +124,37 @@ const App = () => {
           tempMoist > Constant.moistHighLimit ||
           tempMoist < Constant.moistLowLimit;
 
+        //Mock data PH và Salitiny
+        const MockDataPH = MockTestPH;
+        const dataObjsPH = MockTestPH.feeds;
+        var datapHChart = dataObjsPH.map((dataObj) => dataObj.field1);
+
+        const MockDataSalinity = MockTestSalinity;
+        const dataObjsSalinity = MockTestSalinity.feeds;
+        var dataSalinityChart = dataObjsSalinity.map(
+          (dataObj) => dataObj.field1
+        );
         //Cập nhật trạng thái
         await setState({
           temperature: tempTemperature,
           moist: tempMoist,
+          pH: datapHChart[99],
+          salinity: dataSalinityChart[99],
           isAlertTemperature: tempIsAlertTemperature,
           isAlertMoist: tempIsAlertMoist,
           labelChart: labelChart,
           dataChartTemperature: dataTemperatureChart,
           dataChartMoist: dataMoistChart,
+          dataChartPH: datapHChart,
+          dataChartSalinity: dataSalinityChart,
         });
       })
     );
   };
+  useEffect(async () => {
+    fetch2API();
+    console.log("In duy nhất 1 lần khi refresh");
+  }, []);
   //Lấy API
   useEffect(async () => {
     intervalRef.current = setInterval(async () => {
@@ -203,18 +227,18 @@ const App = () => {
               style={{ flexDirection: "row", display: "flex", marginTop: 20 }}
             >
               <SensorWidget
-                value={75}
+                value={state.pH}
                 color={ColorConstant.mpurple}
-                title="LOREM 1"
-                img={moist_icon}
+                title={Constant.titlepH}
+                img={pH_icon}
                 backgroundColor="white"
               />
               <div style={{ width: 20 }}></div>
               <SensorWidget
-                value={75}
+                value={state.salinity}
                 color={ColorConstant.mlightgreen}
-                title="LOREM 2"
-                img={moist_icon}
+                title={Constant.titleSalinity}
+                img={salitiny_icon}
                 backgroundColor="white"
               />
             </div>
@@ -230,8 +254,8 @@ const App = () => {
           />
           <div style={{ width: 20 }}></div>
           <LineChart
-            title="Humidity Chart"
-            label="Humidity"
+            title="Moist Chart"
+            label="Moist"
             labelChart={state.labelChart}
             dataChart={state.dataChartMoist}
             mainColor={ColorConstant.mblue}
@@ -239,16 +263,18 @@ const App = () => {
         </div>
         <div style={{ flexDirection: "row", display: "flex", marginTop: 20 }}>
           <LineChart
-            title="Lorem 1 Chart"
-            label="Lorem 1"
+            title="pH Chart"
+            label="pH"
             labelChart={state.labelChart}
+            dataChart={state.dataChartPH}
             mainColor={ColorConstant.mpurple}
           />
           <div style={{ width: 20 }}></div>
           <LineChart
-            title="Lorem 2 Chart"
-            label="Lorem 2"
+            title="Salinity Chart"
+            label="Salinity"
             labelChart={state.labelChart}
+            dataChart={state.dataChartSalinity}
             mainColor={ColorConstant.mlightgreen}
           />
         </div>

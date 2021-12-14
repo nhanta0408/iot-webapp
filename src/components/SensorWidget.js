@@ -54,7 +54,7 @@ export default function SensorWidget(props) {
           >
             {props.value}&deg;C
           </p>
-        ) : (
+        ) : props.title == Constant.titleMoist ? (
           <p
             style={{
               margin: "0px 0px 5px 20px",
@@ -63,6 +63,26 @@ export default function SensorWidget(props) {
             }}
           >
             {props.value + "%"}
+          </p>
+        ) : props.title == Constant.titlepH ? (
+          <p
+            style={{
+              margin: "0px 0px 5px 20px",
+              fontSize: 45,
+              color: props.isAlert ? "red" : "black",
+            }}
+          >
+            {props.value}
+          </p>
+        ) : (
+          <p
+            style={{
+              margin: "0px 0px 5px 20px",
+              fontSize: 45,
+              color: props.isAlert ? "red" : "black",
+            }}
+          >
+            {props.value} &#8240;
           </p>
         )}
       </div>
