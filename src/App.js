@@ -6,7 +6,7 @@ import thermo_icon from "./assets/thermo.png";
 import moist_icon from "./assets/moist.png";
 import pH_icon from "./assets/pH.png";
 import salitiny_icon from "./assets/salitiny.png";
-import bg from "./assets/bg.png";
+import bg_1 from "./assets/bg-1.png";
 
 import LineChart from "./components/LineChart";
 
@@ -21,6 +21,7 @@ import { MockTestPH } from "./components/MockTestJsonPH";
 import { MockTestSalinity } from "./components/MockTestJsonSalinity";
 
 import axios, { Axios } from "axios";
+import LimitationTable from "./components/LimitationTable";
 const App = () => {
   const [time, setTime] = useState(
     DateTime.fromISO("2021-12-01T06:58:33.988648+00:00")
@@ -54,27 +55,20 @@ const App = () => {
     setIsEnabledUpdateAPI(checked);
   }
   function checkAlert() {
-    // console.log("alert tem", state.isAlertTemperature);
-    // console.log("alert moist", state.isAlertMoist);
-    // console.log("Temperature: ", state.temperature);
-    // console.log("Moist: ", state.moist);
     console.log("--------------");
     if (isEnabledAlert) {
       //Xét switch cho phép bật Popup
       if (state.isAlertTemperature && !state.isAlertMoist) {
         AlertPopup(
           Constant.titleTemperature,
-          "Alert \n Temperature is too high or too low!"
+          "Cảnh báo \n Nhiệt độ đang vượt ngưỡng!"
         );
       } else if (state.isAlertMoist && !state.isAlertTemperature) {
-        AlertPopup(
-          Constant.titleMoist,
-          "Alert \n Moist is too high or too low!"
-        );
+        AlertPopup(Constant.titleMoist, "Cảnh báo \n Độ ẩm đang vượt ngưỡng!");
       } else if (state.isAlertMoist && state.isAlertTemperature) {
         AlertPopup(
           Constant.titleBothTemperatureMoist,
-          "Alert \n Temperature and Moist is too high or too low!"
+          "Cảnh báo \n Nhiệt độ và độ ẩm đang vượt ngưỡng!"
         );
       }
     }
@@ -106,11 +100,11 @@ const App = () => {
           parseInt(dataTemperatureChart[50]) + DateTime.now().second + 30;
         dataTemperatureChart[99] =
           parseInt(dataTemperatureChart[99]) + DateTime.now().second;
-
         dataMoistChart[50] =
           parseInt(dataMoistChart[50]) - DateTime.now().second - 50;
         dataMoistChart[99] =
           parseInt(dataMoistChart[99]) - DateTime.now().second;
+        //Hết Simulate
 
         tempTemperature = parseInt(dataTemperatureChart.slice(-1)[0]);
         tempMoist =
@@ -198,7 +192,7 @@ const App = () => {
               flexDirection: "column",
             }}
           >
-            <img src={bg} width="780" height="480" />
+            <img src={bg_1} width="780" height="480" />
           </div>
           <div style={{ marginLeft: 20 }}>
             <Clock />
@@ -243,19 +237,21 @@ const App = () => {
               />
             </div>
           </div>
+          <div style={{ width: 20 }}></div>
+          <LimitationTable />
         </div>
         <div style={{ flexDirection: "row", display: "flex", marginTop: 20 }}>
           <LineChart
-            title="Temperature Chart"
-            label="Temperature"
+            title="Đồ thị Nhiệt độ"
+            label="Nhiệt độ"
             labelChart={state.labelChart}
             dataChart={state.dataChartTemperature}
             mainColor={ColorConstant.mred}
           />
           <div style={{ width: 20 }}></div>
           <LineChart
-            title="Moist Chart"
-            label="Moist"
+            title="Đồ thị độ ẩm"
+            label="Độ ẩm"
             labelChart={state.labelChart}
             dataChart={state.dataChartMoist}
             mainColor={ColorConstant.mblue}
@@ -263,16 +259,16 @@ const App = () => {
         </div>
         <div style={{ flexDirection: "row", display: "flex", marginTop: 20 }}>
           <LineChart
-            title="pH Chart"
-            label="pH"
+            title="Đồ thị độ pH"
+            label="Độ pH"
             labelChart={state.labelChart}
             dataChart={state.dataChartPH}
             mainColor={ColorConstant.mpurple}
           />
           <div style={{ width: 20 }}></div>
           <LineChart
-            title="Salinity Chart"
-            label="Salinity"
+            title="Đồ thị độ mặn"
+            label="Độ mặn"
             labelChart={state.labelChart}
             dataChart={state.dataChartSalinity}
             mainColor={ColorConstant.mlightgreen}
@@ -294,10 +290,10 @@ const App = () => {
           alignItems: "center",
         }}
       >
-        <h1>SETTINGS</h1>
-        <h3>Enable alert popup</h3>
+        <h1>CÀI ĐẶT</h1>
+        <h3>Cho phép hiển thị cửa sổ cảnh báo</h3>
         <Switch onChange={handleSwitchPopupChange} checked={isEnabledAlert} />
-        <h3>Enable update API</h3>
+        <h3>Cho phép cập nhật từ API</h3>
         <Switch
           onChange={handleSwitchUpdateAPIChange}
           checked={isEnabledUpdateAPI}

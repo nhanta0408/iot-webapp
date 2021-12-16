@@ -5,4 +5,5 @@ export const ColorConstant = {
   mdarkblue: "#032B91",
   mpurple: "#462445",
   mlightgreen: "#47B39C",
+  orange: "#FF8600",
 };

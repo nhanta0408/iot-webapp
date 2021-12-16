@@ -1,4 +1,3 @@
-import React from "react";
 import Swal from "sweetalert2";
 import thermo_icon from "./../assets/thermo.png";
 import moist_icon from "./../assets/moist.png";

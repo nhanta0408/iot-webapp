@@ -1,7 +1,6 @@
 import React from "react";
 import { useEffect, useState } from "react";
 import { DateTime } from "luxon";
-import { parseWithOptions } from "date-fns/fp";
 export default function Clock(props) {
   const [time, setTime] = useState(
     DateTime.fromISO("2021-12-01T06:58:33.988648+00:00")
@@ -51,7 +50,7 @@ export default function Clock(props) {
           display: "flex",
         }}
       >
-        <h2 style={{ color: "white" }}>CLOCK</h2>
+        <h2 style={{ color: "white" }}>THỜI GIAN</h2>
       </div>
       <div
         style={{
@@ -79,7 +78,7 @@ export default function Clock(props) {
           }}
         >
           <p style={{ margin: "0px 0px 0px 0px", fontSize: 23 }}>
-            {time.toFormat("EEEE")}
+            {time.setLocale("vi").toFormat("EEEE")}
           </p>
           <p style={{ margin: "0px 0px 0px 0px", fontSize: 23 }}>
             {time.toFormat("dd/MM/yyyy")}

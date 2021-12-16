@@ -1,9 +1,5 @@
 import React from "react";
-import thermo_icon from "./../assets/thermo.png";
-import { ColorConstant } from "./../value/color_constant";
 import { Constant } from "../value/constant";
-import Swal from "sweetalert2";
-import AlertPopup from "./AlertPopup";
 
 export default function SensorWidget(props) {
   return (
