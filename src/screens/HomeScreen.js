@@ -3,7 +3,7 @@ import Clock from "../components/Clock";
 import SensorWidget from "../components/SensorWidget";
 import { ColorConstant } from "../value/color_constant";
 import thermo_icon from "../assets/thermo.png";
-import moist_icon from "../assets/moist.png";
+import dissolveOxy_icon from "../assets/moist.png";
 import pH_icon from "../assets/pH.png";
 import salitiny_icon from "../assets/salitiny.png";
 import bg_1 from "../assets/bg-1.png";
@@ -29,50 +29,56 @@ import Dropdown from "react-dropdown";
 import "react-dropdown/style.css";
 import DropdownBar from "../components/DropdownBar";
 import Select from "react-select";
+import { checkAlert } from "../util/checkAlert";
 const HomeScreen = () => {
   const [time, setTime] = useState(
     DateTime.fromISO("2021-12-01T06:58:33.988648+00:00")
   );
 
-  const [isEnabledAlert, setIsEnabledAlert] = useState(false);
+  const [isEnabledAlert, setIsEnabledAlert] = useState(true);
   const [isEnabledUpdateAPI, setIsEnabledUpdateAPI] = useState(true);
+  const [isMute, setIsMute] = useState(true);
+
   const [pondSelected, setPondSelected] = useState({ value: 1 });
   const [selectedOption, setSelectedOption] = useState({
     value: "Ao số 1",
     label: "Ao số 1",
     color: "red",
   });
-
   const [iotDataFromAPI, setIotDataFromAPI] = useState({
     temperature: 15,
-    moist: 70,
+    dissolveOxy: 70,
     pH: 7.5,
     salinity: 25,
-    isAlertTemperature: false,
-    isAlertMoist: false,
+    isAlertTemperature: 0,
+    isAlertDissolveOxy: 0,
+    isAlertpH: 0,
+    isAlertSalinity: 0,
     labelChart: [],
     dataChartTemperature: [],
-    dataChartMoist: [],
+    dataChartDissolveOxy: [],
     dataChartPH: [],
     dataChartSalinity: [],
   });
   const [iotDataRender, setIotDataRender] = useState({
     temperature: 15,
-    moist: 70,
+    dissolveOxy: 70,
     pH: 7.5,
     salinity: 25,
-    isAlertTemperature: false,
-    isAlertMoist: false,
+    isAlertTemperature: 0,
+    isAlertDissolveOxy: 0,
+    isAlertpH: 0,
+    isAlertSalinity: 0,
     labelChart: [],
     dataChartTemperature: [],
-    dataChartMoist: [],
+    dataChartDissolveOxy: [],
     dataChartPH: [],
     dataChartSalinity: [],
   });
   const intervalRef = useRef(null);
   var mockDateTimeSecond = 10;
   var tempTemperature = 10;
-  var tempMoist = 80;
+  var tempDissolveOxy = 80;
   //const options = ["Ao nuôi số 1", "Ao nuôi số 2"];
   const options = [
     { value: "Ao số 1", label: "Ao số 1", color: "red" },
@@ -85,6 +91,9 @@ const HomeScreen = () => {
   function handleSwitchUpdateAPIChange(checked) {
     setIsEnabledUpdateAPI(checked);
   }
+  function handleSwitchMute(checked) {
+    setIsMute(checked);
+  }
   function handleDropdownChange(option) {
     console.log("Option: ", option);
     const pondIndex = parseInt(option.value.substring(11, 12)) - 1;
@@ -92,27 +101,31 @@ const HomeScreen = () => {
     setPondSelected({ value: pondIndex });
   }
 
-  function checkAlert() {
+  function showAlert() {
     console.log("--------------");
     if (isEnabledAlert) {
       //Xét switch cho phép bật Popup
-      if (iotDataRender.isAlertTemperature && !iotDataRender.isAlertMoist) {
+      if (
+        iotDataRender.isAlertTemperature == 2 ||
+        iotDataRender.isAlertDissolveOxy == 2 ||
+        iotDataRender.isAlertpH == 2 ||
+        iotDataRender.isAlertSalinity == 2
+      ) {
         AlertPopup(
-          Constant.titleTemperature,
-          "Cảnh báo \n Nhiệt độ đang vượt ngưỡng!"
+          Constant.redWarning,
+          "Cảnh báo \n Có giá trị vượt ngưỡng",
+          isMute
         );
       } else if (
-        iotDataRender.isAlertMoist &&
-        !iotDataRender.isAlertTemperature
-      ) {
-        AlertPopup(Constant.titleMoist, "Cảnh báo \n Độ ẩm đang vượt ngưỡng!");
-      } else if (
-        iotDataRender.isAlertMoist &&
-        iotDataRender.isAlertTemperature
+        iotDataRender.isAlertTemperature == 1 ||
+        iotDataRender.isAlertDissolveOxy == 1 ||
+        iotDataRender.isAlertpH == 1 ||
+        iotDataRender.isAlertSalinity == 1
       ) {
         AlertPopup(
-          Constant.titleBothTemperatureMoist,
-          "Cảnh báo \n Nhiệt độ và độ ẩm đang vượt ngưỡng!"
+          Constant.yellowWarning,
+          "Cảnh báo \n Có giá trị sắp vượt ngưỡng",
+          isMute
         );
       }
     }
@@ -120,15 +133,15 @@ const HomeScreen = () => {
   const fetch2API = async () => {
     const temperatureAPI =
       "https://api.thingspeak.com/channels/1569887/fields/1.json";
-    const moistAPI =
+    const dissolveOxyAPI =
       "https://api.thingspeak.com/channels/1569887/fields/2.json";
 
     const getTemperatureAPI = axios.get(temperatureAPI);
-    const getMoistAPI = axios.get(moistAPI);
-    axios.all([getTemperatureAPI, getMoistAPI]).then(
+    const getDissolveOxyAPI = axios.get(dissolveOxyAPI);
+    axios.all([getTemperatureAPI, getDissolveOxyAPI]).then(
       axios.spread(async (...allData) => {
         const temperatureData = allData[0].data;
-        const moistData = allData[1].data;
+        const dissolveOxyData = allData[1].data;
 
         const dataObjs1 = temperatureData.feeds;
         var labelChart = dataObjs1.map(
@@ -136,33 +149,30 @@ const HomeScreen = () => {
         );
         var dataTemperatureChart = dataObjs1.map((dataObj1) => dataObj1.field1);
 
-        const dataObjs2 = moistData.feeds;
-        var dataMoistChart = dataObjs2.map((dataObj2) => dataObj2.field2);
+        const dataObjs2 = dissolveOxyData.feeds;
+        var dataDissolveOxyChart = dataObjs2.map((dataObj2) => dataObj2.field2);
 
         //Simulate data
         dataTemperatureChart[50] =
-          parseInt(dataTemperatureChart[50]) + DateTime.now().second + 30;
+          parseInt(dataTemperatureChart[50]) + (DateTime.now().second + 30) / 6;
         dataTemperatureChart[99] =
-          parseInt(dataTemperatureChart[99]) + DateTime.now().second;
-        dataMoistChart[50] =
-          parseInt(dataMoistChart[50]) - DateTime.now().second - 50;
-        dataMoistChart[99] =
-          parseInt(dataMoistChart[99]) - DateTime.now().second;
+          parseInt(dataTemperatureChart[99]) + DateTime.now().second / 6;
+        dataDissolveOxyChart[50] =
+          (parseInt(dataDissolveOxyChart[50]) - DateTime.now().second - 50) /
+          18;
+        dataDissolveOxyChart[99] = parseFloat(
+          (parseInt(dataDissolveOxyChart[99]) - DateTime.now().second) / 18
+        ).toFixed(1);
         //Hết Simulate
 
         //Lấy phần tử cuối cùng
-        tempTemperature = parseInt(dataTemperatureChart.slice(-1)[0]);
-        tempMoist =
-          dataMoistChart.slice(-1)[0] == null
-            ? 70
-            : parseInt(dataMoistChart.slice(-1)[0]);
-
-        var tempIsAlertTemperature =
-          tempTemperature > Constant.temperatureHighLimit ||
-          tempTemperature < Constant.temperatureLowLimit;
-        var tempIsAlertMoist =
-          tempMoist > Constant.moistHighLimit ||
-          tempMoist < Constant.moistLowLimit;
+        tempTemperature = parseFloat(dataTemperatureChart.slice(-1)[0]).toFixed(
+          1
+        );
+        tempDissolveOxy =
+          dataDissolveOxyChart.slice(-1)[0] == null
+            ? 3.75
+            : parseFloat(dataDissolveOxyChart.slice(-1)[0]).toFixed(1);
 
         //Mock data PH và Salitiny
         const MockDataPH = MockTestPH;
@@ -174,17 +184,33 @@ const HomeScreen = () => {
         var dataSalinityChart = dataObjsSalinity.map(
           (dataObj) => dataObj.field1
         );
+        var tempSalinity = parseInt(dataSalinityChart.slice(-1)[0]);
+        var temppH = parseFloat(datapHChart.slice(-1)[0]).toFixed(1);
+
+        var tempIsAlertTemperature = 1;
+        var tempIsAlertDissolveOxy = 1;
+        var tempIsAlertSalinity = 1;
+        var tempIsAlertpH = 1;
+
+        var resultCheck = checkAlert(
+          tempTemperature,
+          tempDissolveOxy,
+          temppH,
+          tempSalinity
+        );
         //Cập nhật trạng thái
         await setIotDataFromAPI({
           temperature: tempTemperature,
-          moist: tempMoist,
+          dissolveOxy: tempDissolveOxy,
           pH: datapHChart[99],
           salinity: dataSalinityChart[99],
-          isAlertTemperature: tempIsAlertTemperature,
-          isAlertMoist: tempIsAlertMoist,
+          isAlertTemperature: resultCheck.isTemperatureAlert,
+          isAlertDissolveOxy: resultCheck.isDissolveOxyAlert,
+          isAlertpH: resultCheck.ispHAlert,
+          isAlertSalinity: resultCheck.isSalinityAlert,
           labelChart: labelChart,
           dataChartTemperature: dataTemperatureChart,
-          dataChartMoist: dataMoistChart,
+          dataChartDissolveOxy: dataDissolveOxyChart,
           dataChartPH: datapHChart,
           dataChartSalinity: dataSalinityChart,
         });
@@ -215,6 +241,7 @@ const HomeScreen = () => {
     console.log(`selectedOption`, selectedOption);
     if (selectedOption.value === "Ao số 1") {
       setIotDataRender(iotDataFromAPI);
+      console.log(iotDataRender);
     } else {
       //MockData
       const MockDataTemperature = MockTest;
@@ -224,30 +251,9 @@ const HomeScreen = () => {
       );
       var dataTemperatureChart = dataObjs1.map((dataObj1) => dataObj1.field1);
 
-      var dataMoistChart = dataObjs1.map((dataObj1) => {
-        return (parseInt(dataObj1.field1) + 60).toString();
+      var dataDissolveOxyChart = dataObjs1.map((dataObj1) => {
+        return (parseInt(dataObj1.field1) / 8).toString();
       });
-
-      //Simulate data
-      dataTemperatureChart[50] =
-        parseInt(dataTemperatureChart[50]) + DateTime.now().second - 30;
-      dataTemperatureChart[99] =
-        parseInt(dataTemperatureChart[99]) + DateTime.now().second - 30;
-      dataMoistChart[50] = parseInt(dataMoistChart[50]) - DateTime.now().second;
-      dataMoistChart[99] = parseInt(dataMoistChart[99]) - DateTime.now().second;
-      //Hết Simulate
-
-      tempTemperature = parseInt(dataTemperatureChart.slice(-1)[0]);
-      tempMoist =
-        dataMoistChart.slice(-1)[0] == null
-          ? 70
-          : parseInt(dataMoistChart.slice(-1)[0]);
-      var tempIsAlertTemperature =
-        tempTemperature > Constant.temperatureHighLimit ||
-        tempTemperature < Constant.temperatureLowLimit;
-      var tempIsAlertMoist =
-        tempMoist > Constant.moistHighLimit ||
-        tempMoist < Constant.moistLowLimit;
 
       //Mock data PH và Salitiny
       const MockDataPH = MockTestPH;
@@ -258,16 +264,46 @@ const HomeScreen = () => {
       const dataObjsSalinity = MockTestSalinity.feeds;
       var dataSalinityChart = dataObjsSalinity.map((dataObj) => dataObj.field1);
 
+      //Chỉnh value
+      dataTemperatureChart[99] = 22.4;
+      dataDissolveOxyChart[99] = 3.75;
+      datapHChart[99] = 7.75;
+      dataSalinityChart[99] = 22;
+
+      tempTemperature = parseFloat(dataTemperatureChart.slice(-1)[0]).toFixed(
+        1
+      );
+      tempDissolveOxy =
+        dataDissolveOxyChart.slice(-1)[0] == null
+          ? 3.75
+          : parseFloat(dataDissolveOxyChart.slice(-1)[0]).toFixed(1);
+      var temppH = parseFloat(datapHChart.slice(-1)[0]).toFixed(1);
+      var tempSalinity = parseInt(dataSalinityChart.slice(-1)[0]);
+
+      var tempIsAlertTemperature = 1;
+      var tempIsAlertDissolveOxy = 1;
+      var tempIsAlertSalinity = 1;
+      var tempIsAlertpH = 1;
+      console.log("temp pH", temppH);
+      var resultCheck = checkAlert(
+        tempTemperature,
+        tempDissolveOxy,
+        temppH,
+        tempSalinity
+      );
+      console.log(resultCheck);
       setIotDataRender({
         temperature: tempTemperature,
-        moist: tempMoist,
-        pH: datapHChart[99],
-        salinity: dataSalinityChart[99],
-        isAlertTemperature: tempIsAlertTemperature,
-        isAlertMoist: tempIsAlertMoist,
+        dissolveOxy: tempDissolveOxy,
+        pH: temppH,
+        salinity: tempSalinity,
+        isAlertTemperature: resultCheck.isTemperatureAlert,
+        isAlertDissolveOxy: resultCheck.isDissolveOxyAlert,
+        isAlertpH: resultCheck.ispHAlert,
+        isAlertSalinity: resultCheck.isSalinityAlert,
         labelChart: labelChart,
         dataChartTemperature: dataTemperatureChart,
-        dataChartMoist: dataMoistChart,
+        dataChartDissolveOxy: dataDissolveOxyChart,
         dataChartPH: datapHChart,
         dataChartSalinity: dataSalinityChart,
       });
@@ -276,7 +312,7 @@ const HomeScreen = () => {
 
   //set Alert
   useEffect(() => {
-    checkAlert();
+    showAlert();
   }, [iotDataRender]);
 
   return (
@@ -354,11 +390,11 @@ const HomeScreen = () => {
               />
               <div style={{ width: 20 }}></div>
               <SensorWidget
-                value={iotDataRender.moist}
+                value={iotDataRender.dissolveOxy}
                 color={ColorConstant.mblue}
-                title={Constant.titleMoist}
-                isAlert={iotDataRender.isAlertMoist}
-                img={moist_icon}
+                title={Constant.titleDissolveOxy}
+                isAlert={iotDataRender.isAlertDissolveOxy}
+                img={dissolveOxy_icon}
                 backgroundColor="white"
               />
             </div>
@@ -369,6 +405,7 @@ const HomeScreen = () => {
                 value={iotDataRender.pH}
                 color={ColorConstant.mpurple}
                 title={Constant.titlepH}
+                isAlert={iotDataRender.isAlertpH}
                 img={pH_icon}
                 backgroundColor="white"
               />
@@ -377,6 +414,7 @@ const HomeScreen = () => {
                 value={iotDataRender.salinity}
                 color={ColorConstant.mlightgreen}
                 title={Constant.titleSalinity}
+                isAlert={iotDataRender.isAlertSalinity}
                 img={salitiny_icon}
                 backgroundColor="white"
               />
@@ -402,10 +440,10 @@ const HomeScreen = () => {
           />
           <div style={{ width: 20 }}></div>
           <LineChart
-            title="Đồ thị độ ẩm"
-            label="Độ ẩm"
+            title="Đồ thị Độ oxy hòa tan"
+            label="Độ oxy hòa tan"
             labelChart={iotDataRender.labelChart}
-            dataChart={iotDataRender.dataChartMoist}
+            dataChart={iotDataRender.dataChartDissolveOxy}
             mainColor={ColorConstant.mblue}
           />
         </div>
@@ -457,6 +495,8 @@ const HomeScreen = () => {
           onChange={handleSwitchUpdateAPIChange}
           checked={isEnabledUpdateAPI}
         />
+        <h3>Tắt âm thanh cảnh báo</h3>
+        <Switch onChange={handleSwitchMute} checked={isMute} />
       </div>
       <div
         style={{

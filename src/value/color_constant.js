@@ -6,4 +6,5 @@ export const ColorConstant = {
   mpurple: "#462445",
   mlightgreen: "#47B39C",
   orange: "#FF8600",
+  yellow: "#ffb300",
 };

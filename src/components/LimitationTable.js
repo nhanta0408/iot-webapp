@@ -39,22 +39,22 @@ export default function LimitationTable() {
       >
         <LimitationRow
           title={"Nhiệt độ"}
-          limitaionValue={"20-40 "}
+          limitaionValue={"18-33 "}
           color={ColorConstant.mred}
         />
         <LimitationRow
-          title={"Độ ẩm"}
-          limitaionValue={"50-90 %"}
+          title={"O2 \n hòa tan"}
+          limitaionValue={">5 mg/l"}
           color={ColorConstant.mblue}
         />
         <LimitationRow
           title={"Độ pH"}
-          limitaionValue={"6.5-7.5"}
+          limitaionValue={"7-9"}
           color={ColorConstant.mpurple}
         />
         <LimitationRow
           title={"Độ mặn"}
-          limitaionValue={"20-30 \u2030"}
+          limitaionValue={"5-35 \u2030"}
           color={ColorConstant.mlightgreen}
         />
       </div>

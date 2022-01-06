@@ -510,7 +510,7 @@ export const MockTestSalinity = {
     {
       created_at: "2021-11-29T10:44:12Z",
       entry_id: 2103,
-      field1: "25",
+      field1: "23",
     },
   ],
 };

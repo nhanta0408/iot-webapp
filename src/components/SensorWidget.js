@@ -1,6 +1,6 @@
 import React from "react";
 import { Constant } from "../value/constant";
-
+import { ColorConstant } from "../value/color_constant";
 export default function SensorWidget(props) {
   return (
     <div
@@ -45,27 +45,42 @@ export default function SensorWidget(props) {
             style={{
               margin: "0px 0px 5px 10px",
               fontSize: 45,
-              color: props.isAlert ? "red" : "black",
+              color:
+                props.isAlert == 2
+                  ? "red"
+                  : props.isAlert == 1
+                  ? ColorConstant.yellow
+                  : "black",
             }}
           >
             {props.value}&deg;C
           </p>
-        ) : props.title == Constant.titleMoist ? (
+        ) : props.title == Constant.titleDissolveOxy ? (
           <p
             style={{
-              margin: "0px 0px 5px 20px",
-              fontSize: 45,
-              color: props.isAlert ? "red" : "black",
+              margin: "0px 0px 5px 0px",
+              fontSize: 40,
+              color:
+                props.isAlert == 2
+                  ? "red"
+                  : props.isAlert == 1
+                  ? ColorConstant.yellow
+                  : "black",
             }}
           >
-            {props.value + "%"}
+            {props.value + "mg/l"}
           </p>
         ) : props.title == Constant.titlepH ? (
           <p
             style={{
               margin: "0px 0px 5px 20px",
               fontSize: 45,
-              color: props.isAlert ? "red" : "black",
+              color:
+                props.isAlert == 2
+                  ? "red"
+                  : props.isAlert == 1
+                  ? ColorConstant.yellow
+                  : "black",
             }}
           >
             {props.value}
@@ -75,7 +90,12 @@ export default function SensorWidget(props) {
             style={{
               margin: "0px 0px 5px 20px",
               fontSize: 45,
-              color: props.isAlert ? "red" : "black",
+              color:
+                props.isAlert == 2
+                  ? "red"
+                  : props.isAlert == 1
+                  ? ColorConstant.yellow
+                  : "black",
             }}
           >
             {props.value} &#8240;
