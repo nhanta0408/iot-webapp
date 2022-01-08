@@ -99,28 +99,37 @@ const HomeScreen = () => {
 
   function showAlert() {
     console.log("--------------");
+    var isHasAleastLevel2 =
+      iotDataRender.isAlertTemperature == 2 ||
+      iotDataRender.isAlertDissolveOxy == 2 ||
+      iotDataRender.isAlertpH == 2 ||
+      iotDataRender.isAlertSalinity == 2;
+    var isHasAleastLevel1 =
+      iotDataRender.isAlertTemperature == 1 ||
+      iotDataRender.isAlertDissolveOxy == 1 ||
+      iotDataRender.isAlertpH == 1 ||
+      iotDataRender.isAlertSalinity == 1;
     if (isEnabledAlert) {
       //Xét switch cho phép bật Popup
-      if (
-        iotDataRender.isAlertTemperature == 2 ||
-        iotDataRender.isAlertDissolveOxy == 2 ||
-        iotDataRender.isAlertpH == 2 ||
-        iotDataRender.isAlertSalinity == 2
-      ) {
+      //Nếu có ít nhất 1 cái level2 và KHÔNG có cái level1 nào
+      if (isHasAleastLevel2 && !isHasAleastLevel1) {
         AlertPopup(
           Constant.redWarning,
           "Cảnh báo \n Có giá trị vượt ngưỡng",
           isMute
         );
-      } else if (
-        iotDataRender.isAlertTemperature == 1 ||
-        iotDataRender.isAlertDissolveOxy == 1 ||
-        iotDataRender.isAlertpH == 1 ||
-        iotDataRender.isAlertSalinity == 1
-      ) {
+      }
+      //Nếu có ít nhất 1 cái level1 và KHÔNG có cái level2 nào
+      else if (isHasAleastLevel1 && !isHasAleastLevel2) {
         AlertPopup(
           Constant.yellowWarning,
           "Cảnh báo \n Có giá trị sắp vượt ngưỡng",
+          isMute
+        );
+      } else if (isHasAleastLevel1 && isHasAleastLevel2) {
+        AlertPopup(
+          Constant.yellowWarning,
+          "Cảnh báo \n Có giá trị đã vượt ngưỡng \n Có giá trị sắp vượt ngưỡng",
           isMute
         );
       }
@@ -257,11 +266,11 @@ const HomeScreen = () => {
         (dataObj) => dataObj.field1
       );
 
-      //Chỉnh value
-      dataTemperatureChart[99] = 22.4;
-      dataDissolveOxyChart[99] = 3.75;
-      datapHChart[99] = 7.75;
-      dataSalinityChart[99] = 25;
+      //Chinh value gia
+      dataTemperatureChart[99] = 39;
+      dataDissolveOxyChart[99] = 5;
+      datapHChart[99] = 7.25;
+      dataSalinityChart[99] = 29;
 
       var tempTemperature = parseFloat(
         dataTemperatureChart.slice(-1)[0]

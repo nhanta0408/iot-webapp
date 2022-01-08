@@ -20,10 +20,13 @@ export function checkAlert(temperature, dissolveOxy, pH, salinity) {
   var tempIsAlertDissolveOxy;
   if (dissolveOxy < Constant.dissolveOxyLowLow) {
     tempIsAlertDissolveOxy = 2;
-  } else if (dissolveOxy > Constant.dissolveOxyLow) {
-    tempIsAlertDissolveOxy = 0;
-  } else {
+  } else if (
+    dissolveOxy > Constant.dissolveOxyLowLow &&
+    dissolveOxy < Constant.dissolveOxyLow
+  ) {
     tempIsAlertDissolveOxy = 1;
+  } else {
+    tempIsAlertDissolveOxy = 0;
   }
 
   var tempIsAlertSalinity = 0;
