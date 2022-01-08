@@ -20,5 +20,5 @@ export const Constant = {
   salinityLow: 10,
   salinityLowLow: 5,
 
-  timeSamplingData: 5000,
+  timeSamplingData: 10000,
 };

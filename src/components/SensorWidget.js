@@ -88,7 +88,7 @@ export default function SensorWidget(props) {
         ) : (
           <p
             style={{
-              margin: "0px 0px 5px 20px",
+              margin: "0px 0px 5px 0px",
               fontSize: 45,
               color:
                 props.isAlert == 2

@@ -21,7 +21,7 @@ import Switch from "react-switch";
 import Title from "../components/Title";
 import { MockTest } from "../components/MockTestJSON";
 import { MockTestPH } from "../components/MockTestJsonPH";
-import { MockTestSalinity } from "../components/MockTestJsonSalinity";
+import { MockTestDissolveOxy } from "../components/MockTestJsonDissolveOxy";
 
 import axios, { Axios } from "axios";
 import LimitationTable from "../components/LimitationTable";
@@ -36,7 +36,6 @@ const HomeScreen = () => {
   );
 
   const [isEnabledAlert, setIsEnabledAlert] = useState(true);
-  const [isEnabledUpdateAPI, setIsEnabledUpdateAPI] = useState(true);
   const [isMute, setIsMute] = useState(true);
 
   const [pondSelected, setPondSelected] = useState({ value: 1 });
@@ -77,8 +76,7 @@ const HomeScreen = () => {
   });
   const intervalRef = useRef(null);
   var mockDateTimeSecond = 10;
-  var tempTemperature = 10;
-  var tempDissolveOxy = 80;
+
   //const options = ["Ao nuôi số 1", "Ao nuôi số 2"];
   const options = [
     { value: "Ao số 1", label: "Ao số 1", color: "red" },
@@ -88,9 +86,7 @@ const HomeScreen = () => {
   function handleSwitchPopupChange(checked) {
     setIsEnabledAlert(checked);
   }
-  function handleSwitchUpdateAPIChange(checked) {
-    setIsEnabledUpdateAPI(checked);
-  }
+
   function handleSwitchMute(checked) {
     setIsMute(checked);
   }
@@ -133,15 +129,15 @@ const HomeScreen = () => {
   const fetch2API = async () => {
     const temperatureAPI =
       "https://api.thingspeak.com/channels/1569887/fields/1.json";
-    const dissolveOxyAPI =
+    const salinityAPI =
       "https://api.thingspeak.com/channels/1569887/fields/2.json";
 
     const getTemperatureAPI = axios.get(temperatureAPI);
-    const getDissolveOxyAPI = axios.get(dissolveOxyAPI);
-    axios.all([getTemperatureAPI, getDissolveOxyAPI]).then(
+    const getSalinityAPI = axios.get(salinityAPI);
+    axios.all([getTemperatureAPI, getSalinityAPI]).then(
       axios.spread(async (...allData) => {
         const temperatureData = allData[0].data;
-        const dissolveOxyData = allData[1].data;
+        const salinityData = allData[1].data;
 
         const dataObjs1 = temperatureData.feeds;
         var labelChart = dataObjs1.map(
@@ -149,42 +145,39 @@ const HomeScreen = () => {
         );
         var dataTemperatureChart = dataObjs1.map((dataObj1) => dataObj1.field1);
 
-        const dataObjs2 = dissolveOxyData.feeds;
-        var dataDissolveOxyChart = dataObjs2.map((dataObj2) => dataObj2.field2);
-
+        const dataObjs2 = salinityData.feeds;
+        var dataSalinityChart = dataObjs2.map((dataObj2) => dataObj2.field2);
         //Simulate data
         dataTemperatureChart[50] =
           parseInt(dataTemperatureChart[50]) + (DateTime.now().second + 30) / 6;
         dataTemperatureChart[99] =
           parseInt(dataTemperatureChart[99]) + DateTime.now().second / 6;
-        dataDissolveOxyChart[50] =
-          (parseInt(dataDissolveOxyChart[50]) - DateTime.now().second - 50) /
-          18;
-        dataDissolveOxyChart[99] = parseFloat(
-          (parseInt(dataDissolveOxyChart[99]) - DateTime.now().second) / 18
-        ).toFixed(1);
+        dataSalinityChart[50] = parseInt(dataSalinityChart[50]);
+        dataSalinityChart[99] = parseInt(
+          dataSalinityChart[99] - DateTime.now().second / 30
+        );
         //Hết Simulate
 
         //Lấy phần tử cuối cùng
-        tempTemperature = parseFloat(dataTemperatureChart.slice(-1)[0]).toFixed(
-          1
-        );
-        tempDissolveOxy =
-          dataDissolveOxyChart.slice(-1)[0] == null
-            ? 3.75
-            : parseFloat(dataDissolveOxyChart.slice(-1)[0]).toFixed(1);
+        var tempTemperature = parseFloat(
+          dataTemperatureChart.slice(-1)[0]
+        ).toFixed(1);
+        var tempSalinity =
+          dataSalinityChart.slice(-1)[0] == null
+            ? 22
+            : dataSalinityChart.slice(-1)[0];
 
-        //Mock data PH và Salitiny
+        //Mock data PH và Dissolve Oxy
         const MockDataPH = MockTestPH;
         const dataObjsPH = MockTestPH.feeds;
         var datapHChart = dataObjsPH.map((dataObj) => dataObj.field1);
 
-        const MockDataSalinity = MockTestSalinity;
-        const dataObjsSalinity = MockTestSalinity.feeds;
-        var dataSalinityChart = dataObjsSalinity.map(
+        const MockDataDissolveOxy = MockTestDissolveOxy;
+        const dataObjsDissolveOxy = MockTestDissolveOxy.feeds;
+        var dataDissolveOxyChart = dataObjsDissolveOxy.map(
           (dataObj) => dataObj.field1
         );
-        var tempSalinity = parseInt(dataSalinityChart.slice(-1)[0]);
+        var tempDissolveOxy = parseInt(dataDissolveOxyChart.slice(-1)[0]);
         var temppH = parseFloat(datapHChart.slice(-1)[0]).toFixed(1);
 
         var tempIsAlertTemperature = 1;
@@ -202,8 +195,8 @@ const HomeScreen = () => {
         await setIotDataFromAPI({
           temperature: tempTemperature,
           dissolveOxy: tempDissolveOxy,
-          pH: datapHChart[99],
-          salinity: dataSalinityChart[99],
+          pH: temppH,
+          salinity: tempSalinity,
           isAlertTemperature: resultCheck.isTemperatureAlert,
           isAlertDissolveOxy: resultCheck.isDissolveOxyAlert,
           isAlertpH: resultCheck.ispHAlert,
@@ -226,10 +219,8 @@ const HomeScreen = () => {
   useEffect(async () => {
     intervalRef.current = setInterval(async () => {
       mockDateTimeSecond = DateTime.now().second;
-      if (isEnabledUpdateAPI) {
-        await fetch2API();
-        console.log("Dang fetchApi");
-      }
+      await fetch2API();
+      console.log("Dang fetchApi");
     }, Constant.timeSamplingData);
     return () => {
       clearInterval(intervalRef.current);
@@ -251,7 +242,7 @@ const HomeScreen = () => {
       );
       var dataTemperatureChart = dataObjs1.map((dataObj1) => dataObj1.field1);
 
-      var dataDissolveOxyChart = dataObjs1.map((dataObj1) => {
+      var dataSalinityChart = dataObjs1.map((dataObj1) => {
         return (parseInt(dataObj1.field1) / 8).toString();
       });
 
@@ -260,20 +251,22 @@ const HomeScreen = () => {
       const dataObjsPH = MockTestPH.feeds;
       var datapHChart = dataObjsPH.map((dataObj) => dataObj.field1);
 
-      const MockDataSalinity = MockTestSalinity;
-      const dataObjsSalinity = MockTestSalinity.feeds;
-      var dataSalinityChart = dataObjsSalinity.map((dataObj) => dataObj.field1);
+      const MockDataDissolveOxy = MockTestDissolveOxy;
+      const dataObjsDissolveOxy = MockTestDissolveOxy.feeds;
+      var dataDissolveOxyChart = dataObjsDissolveOxy.map(
+        (dataObj) => dataObj.field1
+      );
 
       //Chỉnh value
       dataTemperatureChart[99] = 22.4;
       dataDissolveOxyChart[99] = 3.75;
       datapHChart[99] = 7.75;
-      dataSalinityChart[99] = 22;
+      dataSalinityChart[99] = 25;
 
-      tempTemperature = parseFloat(dataTemperatureChart.slice(-1)[0]).toFixed(
-        1
-      );
-      tempDissolveOxy =
+      var tempTemperature = parseFloat(
+        dataTemperatureChart.slice(-1)[0]
+      ).toFixed(1);
+      var tempDissolveOxy =
         dataDissolveOxyChart.slice(-1)[0] == null
           ? 3.75
           : parseFloat(dataDissolveOxyChart.slice(-1)[0]).toFixed(1);
@@ -490,11 +483,6 @@ const HomeScreen = () => {
         <h1>CÀI ĐẶT</h1>
         <h3>Cho phép hiển thị cửa sổ cảnh báo</h3>
         <Switch onChange={handleSwitchPopupChange} checked={isEnabledAlert} />
-        <h3>Cho phép cập nhật từ API</h3>
-        <Switch
-          onChange={handleSwitchUpdateAPIChange}
-          checked={isEnabledUpdateAPI}
-        />
         <h3>Tắt âm thanh cảnh báo</h3>
         <Switch onChange={handleSwitchMute} checked={isMute} />
       </div>

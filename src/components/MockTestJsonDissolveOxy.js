@@ -1,4 +1,4 @@
-export const MockTestSalinity = {
+export const MockTestDissolveOxy = {
   channel: {
     id: 1569887,
     name: "LVTN",
